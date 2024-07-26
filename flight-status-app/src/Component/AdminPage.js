@@ -34,8 +34,8 @@ const AdminPage = () => {
         console.log('Form data:', formData); // Log form data before sending
 
         try {
-            const response = await fetch(`http://localhost:5000/api/flights/${editId}`, {
-                method: 'PUT',
+            const response = await fetch(`http://localhost:5000/api/flights${editId ? `/${editId}` : ''}`, {
+                method: editId ? 'PUT' : 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -43,7 +43,7 @@ const AdminPage = () => {
             });
 
             if (response.ok) {
-                alert('Flight updated successfully');
+                alert(editId ? 'Flight updated successfully' : 'Flight added successfully');
                 fetchFlights();
                 setFormData({
                     flight_id: '',
@@ -60,13 +60,14 @@ const AdminPage = () => {
             } else {
                 const errorText = await response.text();
                 console.error('Error response:', response.status, errorText);
-                alert(`Error updating flight: ${errorText}`);
+                alert(`Error saving flight data: ${errorText}`);
             }
         } catch (error) {
             console.error('Error saving flight data:', error);
             alert('Error saving flight data. Please check the console for details.');
         }
     };
+
 
 
     const handleInputChange = (e) => {
