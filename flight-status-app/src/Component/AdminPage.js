@@ -31,50 +31,43 @@ const AdminPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Form data:', formData); // Log form data before sending
+
         try {
-            if (editId) {
-                const response = await fetch(`http://localhost:5000/api/flights/${editId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to update flight');
-                }
-                alert('Flight updated successfully');
-            } else {
-                const response = await fetch('http://localhost:5000/api/flights', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to add flight');
-                }
-                alert('Flight added successfully');
-            }
-            fetchFlights();
-            setFormData({
-                flight_id: '',
-                airline: '',
-                status: '',
-                departure_gate: '',
-                arrival_gate: '',
-                scheduled_departure: '',
-                scheduled_arrival: '',
-                actual_departure: '',
-                actual_arrival: ''
+            const response = await fetch(`http://localhost:5000/api/flights/${editId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
             });
-            setEditId(null);
+
+            if (response.ok) {
+                alert('Flight updated successfully');
+                fetchFlights();
+                setFormData({
+                    flight_id: '',
+                    airline: '',
+                    status: '',
+                    departure_gate: '',
+                    arrival_gate: '',
+                    scheduled_departure: '',
+                    scheduled_arrival: '',
+                    actual_departure: '',
+                    actual_arrival: ''
+                });
+                setEditId(null);
+            } else {
+                const errorText = await response.text();
+                console.error('Error response:', response.status, errorText);
+                alert(`Error updating flight: ${errorText}`);
+            }
         } catch (error) {
             console.error('Error saving flight data:', error);
-            alert('Error saving flight data');
+            alert('Error saving flight data. Please check the console for details.');
         }
     };
+
 
     const handleInputChange = (e) => {
         setFormData({
@@ -97,22 +90,29 @@ const AdminPage = () => {
         });
         setEditId(flight._id);
     };
-
     const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this flight?')) {
+            return;
+        }
         try {
             const response = await fetch(`http://localhost:5000/api/flights/${id}`, {
                 method: 'DELETE',
             });
-            if (!response.ok) {
-                throw new Error('Failed to delete flight');
+
+            if (response.ok) {
+                alert('Flight deleted successfully');
+                fetchFlights();
+            } else {
+                const errorText = await response.text();
+                console.error('Error response:', response.status, errorText);
+                alert(`Error deleting flight: ${errorText}`);
             }
-            alert('Flight deleted successfully');
-            fetchFlights();
         } catch (error) {
             console.error('Error deleting flight:', error);
-            alert('Error deleting flight');
+            alert('Error deleting flight. Please check the console for details.');
         }
     };
+
 
     const styles = {
         container: {
@@ -356,8 +356,9 @@ const AdminPage = () => {
                                 <td style={styles.td}>{flight.actual_departure}</td>
                                 <td style={styles.td}>{flight.actual_arrival}</td>
                                 <td style={styles.td}>
-                                    <button style={styles.editButton} onClick={() => handleEdit(flight)}>Edit</button>
-                                    <button style={styles.deleteButton} onClick={() => handleDelete(flight._id)}>Delete</button>
+                                    <button style={styles.editButton} onClick={() => handleEdit(flight)}>Update</button>
+                                    <button style={styles.deleteButton} onClick={() => handleDelete(flight.flight_id)}>Delete</button>
+
                                 </td>
                             </tr>
                         ))}

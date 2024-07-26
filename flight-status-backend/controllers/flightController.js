@@ -45,11 +45,14 @@ exports.addFlight = async (req, res) => {
 };
 
 exports.updateFlight = async (req, res) => {
+    console.log('Updating flight with ID:', req.params.id); // Log ID being updated
+    console.log('Request body:', req.body); // Log the incoming request body
+
     try {
-        const flight = await Flight.findOneAndUpdate(
-            { flight_id: req.params.id },
+        const flight = await Flight.findByIdAndUpdate(
+            req.params.id,
             req.body,
-            { new: true }
+            { new: true, runValidators: true }
         );
         if (!flight) return res.status(404).send('Flight not found');
         res.json(flight);
@@ -59,13 +62,19 @@ exports.updateFlight = async (req, res) => {
     }
 };
 
+
 exports.deleteFlight = async (req, res) => {
+    console.log('Deleting flight with ID:', req.params.id); // Debugging line
     try {
         const flight = await Flight.findOneAndDelete({ flight_id: req.params.id });
-        if (!flight) return res.status(404).send('Flight not found');
+        if (!flight) {
+            console.log('Flight not found'); // Debugging line
+            return res.status(404).send('Flight not found');
+        }
         res.json({ msg: 'Flight removed' });
     } catch (error) {
         console.error('Error deleting flight:', error.message);
         res.status(500).send('Server Error');
     }
 };
+
