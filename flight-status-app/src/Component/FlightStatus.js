@@ -7,6 +7,9 @@ const FlightStatus = () => {
     const fetchFlightData = async () => {
         try {
             const response = await fetch('http://localhost:5000/api/flights');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
             const data = await response.json();
             setFlights(data);
         } catch (error) {
@@ -22,7 +25,7 @@ const FlightStatus = () => {
             const update = JSON.parse(event.data);
             setFlights((prevFlights) => {
                 const updatedFlights = prevFlights.map((flight) =>
-                    flight.flight_id === update.flight_id ? { ...flight, ...update } : flight
+                    flight._id === update._id ? { ...flight, ...update } : flight
                 );
                 return updatedFlights;
             });
@@ -53,7 +56,6 @@ const FlightStatus = () => {
     const headingStyle = {
         textAlign: 'center',
         margin: '20px 0',
-
     };
 
     return (
@@ -75,7 +77,7 @@ const FlightStatus = () => {
                 </thead>
                 <tbody>
                     {flights.map((flight) => (
-                        <tr key={flight.flight_id}>
+                        <tr key={flight._id}>
                             <td style={tdStyle}>{flight.flight_id}</td>
                             <td style={tdStyle}>{flight.airline}</td>
                             <td style={tdStyle}>{flight.status}</td>
