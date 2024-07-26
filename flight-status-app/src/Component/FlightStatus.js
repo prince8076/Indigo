@@ -53,6 +53,7 @@ const FlightStatus = () => {
     const headingStyle = {
         textAlign: 'center',
         margin: '20px 0',
+
     };
 
     return (
