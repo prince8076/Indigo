@@ -11,6 +11,7 @@ const FlightStatus = () => {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
+            console.log('Fetched flight data:', data);
             setFlights(data);
         } catch (error) {
             console.error('Error fetching flight data:', error);
