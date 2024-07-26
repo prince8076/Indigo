@@ -1,13 +1,17 @@
+// src/App.js
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import FlightStatus from './Component/FlightStatus';
-import Notifications from './Component/Notifications';
+import AdminPage from './Component/AdminPage';
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <FlightStatus />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<FlightStatus />} />
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    </Router>
   );
-};
-
+}
 export default App;

@@ -54,108 +54,68 @@ const AdminPage = () => {
         }
     };
 
+    // Inline CSS Styles
+    const styles = {
+        container: {
+            maxWidth: '600px',
+            margin: 'auto',
+            padding: '20px',
+        },
+        heading: {
+            textAlign: 'center',
+        },
+        form: {
+            display: 'flex',
+            flexDirection: 'column',
+        },
+        formGroup: {
+            marginBottom: '10px',
+        },
+        label: {
+            marginRight: '10px',
+        },
+        input: {
+            width: '100%',
+            padding: '8px',
+            border: '1px solid #ddd',
+            boxSizing: 'border-box',
+        },
+        button: {
+            padding: '10px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            cursor: 'pointer',
+            marginTop: '10px',
+        },
+        buttonHover: {
+            backgroundColor: '#45a049',
+        },
+    };
+
     return (
-        <div className="admin-page">
-            <h1>Add New Flight</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="flight_id">Flight ID:</label>
-                    <input
-                        type="text"
-                        id="flight_id"
-                        name="flight_id"
-                        value={flightData.flight_id}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="airline">Airline:</label>
-                    <input
-                        type="text"
-                        id="airline"
-                        name="airline"
-                        value={flightData.airline}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="status">Status:</label>
-                    <input
-                        type="text"
-                        id="status"
-                        name="status"
-                        value={flightData.status}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="departure_gate">Departure Gate:</label>
-                    <input
-                        type="text"
-                        id="departure_gate"
-                        name="departure_gate"
-                        value={flightData.departure_gate}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="arrival_gate">Arrival Gate:</label>
-                    <input
-                        type="text"
-                        id="arrival_gate"
-                        name="arrival_gate"
-                        value={flightData.arrival_gate}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="scheduled_departure">Scheduled Departure:</label>
-                    <input
-                        type="datetime-local"
-                        id="scheduled_departure"
-                        name="scheduled_departure"
-                        value={flightData.scheduled_departure}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="scheduled_arrival">Scheduled Arrival:</label>
-                    <input
-                        type="datetime-local"
-                        id="scheduled_arrival"
-                        name="scheduled_arrival"
-                        value={flightData.scheduled_arrival}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="actual_departure">Actual Departure:</label>
-                    <input
-                        type="datetime-local"
-                        id="actual_departure"
-                        name="actual_departure"
-                        value={flightData.actual_departure}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="actual_arrival">Actual Arrival:</label>
-                    <input
-                        type="datetime-local"
-                        id="actual_arrival"
-                        name="actual_arrival"
-                        value={flightData.actual_arrival}
-                        onChange={handleChange}
-                    />
-                </div>
-                <button type="submit">Add Flight</button>
+        <div style={styles.container}>
+            <h1 style={styles.heading}>Add New Flight</h1>
+            <form onSubmit={handleSubmit} style={styles.form}>
+                {Object.keys(flightData).map((key) => (
+                    <div key={key} style={styles.formGroup}>
+                        <label htmlFor={key} style={styles.label}>
+                            {key.replace(/_/g, ' ').toUpperCase()}:
+                        </label>
+                        <input
+                            type={key.includes('date') || key.includes('time') ? 'datetime-local' : 'text'}
+                            id={key}
+                            name={key}
+                            value={flightData[key]}
+                            onChange={handleChange}
+                            style={styles.input}
+                            required={key !== 'actual_departure' && key !== 'actual_arrival'}
+                        />
+                    </div>
+                ))}
+                <button type="submit" style={styles.button}>
+                    Add Flight
+                </button>
             </form>
         </div>
     );
