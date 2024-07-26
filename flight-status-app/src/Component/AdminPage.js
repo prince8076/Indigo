@@ -33,22 +33,28 @@ const AdminPage = () => {
         e.preventDefault();
         try {
             if (editId) {
-                await fetch(`http://localhost:5000/api/flights/${editId}`, {
+                const response = await fetch(`http://localhost:5000/api/flights/${editId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(formData),
                 });
+                if (!response.ok) {
+                    throw new Error('Failed to update flight');
+                }
                 alert('Flight updated successfully');
             } else {
-                await fetch('http://localhost:5000/api/flights', {
+                const response = await fetch('http://localhost:5000/api/flights', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(formData),
                 });
+                if (!response.ok) {
+                    throw new Error('Failed to add flight');
+                }
                 alert('Flight added successfully');
             }
             fetchFlights();
@@ -66,6 +72,7 @@ const AdminPage = () => {
             setEditId(null);
         } catch (error) {
             console.error('Error saving flight data:', error);
+            alert('Error saving flight data');
         }
     };
 
@@ -93,218 +100,267 @@ const AdminPage = () => {
 
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:5000/api/flights/${id}`, {
+            const response = await fetch(`http://localhost:5000/api/flights/${id}`, {
                 method: 'DELETE',
             });
+            if (!response.ok) {
+                throw new Error('Failed to delete flight');
+            }
             alert('Flight deleted successfully');
             fetchFlights();
         } catch (error) {
             console.error('Error deleting flight:', error);
+            alert('Error deleting flight');
         }
     };
 
-    // Inline styles
-    const formStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-        maxWidth: '600px',
-        margin: '0 auto',
-        padding: '20px',
-        border: '1px solid #ddd',
-        borderRadius: '5px',
-        backgroundColor: '#f9f9f9'
-    };
-
-    const inputStyle = {
-        marginBottom: '10px',
-        padding: '10px',
-        fontSize: '16px',
-        border: '1px solid #ccc',
-        borderRadius: '5px'
-    };
-
-    const buttonStyle = {
-        padding: '10px',
-        backgroundColor: '#4CAF50',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '16px'
-    };
-
-    const buttonHoverStyle = {
-        backgroundColor: '#45a049'
-    };
-
-    const tableStyle = {
-        width: '100%',
-        borderCollapse: 'collapse',
-        marginTop: '20px'
-    };
-
-    const thStyle = {
-        padding: '12px',
-        backgroundColor: '#4CAF50',
-        color: 'white'
-    };
-
-    const tdStyle = {
-        padding: '10px',
-        border: '1px solid #ddd',
-        textAlign: 'center'
-    };
-
-    const editButtonStyle = {
-        padding: '5px 10px',
-        margin: '0 5px',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        backgroundColor: '#ffa500',
-        color: 'white',
-        fontSize: '14px'
-    };
-
-    const deleteButtonStyle = {
-        padding: '5px 10px',
-        margin: '0 5px',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        backgroundColor: '#f44336',
-        color: 'white',
-        fontSize: '14px'
+    const styles = {
+        container: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '20px',
+            fontFamily: 'Arial, sans-serif'
+        },
+        formContainer: {
+            width: '100%',
+            maxWidth: '800px',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            padding: '20px',
+            backgroundColor: '#f9f9f9',
+            marginBottom: '20px'
+        },
+        formTitle: {
+            textAlign: 'center',
+            marginBottom: '20px'
+        },
+        formGroup: {
+            marginBottom: '15px'
+        },
+        label: {
+            display: 'block',
+            marginBottom: '5px',
+            fontWeight: 'bold'
+        },
+        input: {
+            width: '100%',
+            padding: '10px',
+            border: '1px solid #ccc',
+            borderRadius: '4px'
+        },
+        button: {
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            textAlign: 'center',
+            textDecoration: 'none',
+            display: 'inline-block',
+            fontSize: '16px',
+            margin: '4px 2px',
+            cursor: 'pointer',
+            borderRadius: '4px',
+            transition: 'background-color 0.3s'
+        },
+        buttonHover: {
+            backgroundColor: '#45a049'
+        },
+        tableContainer: {
+            width: '100%',
+            overflowX: 'auto'
+        },
+        table: {
+            width: '100%',
+            borderCollapse: 'collapse'
+        },
+        th: {
+            padding: '12px',
+            backgroundColor: '#4CAF50',
+            color: 'white'
+        },
+        td: {
+            padding: '10px',
+            border: '1px solid #ddd',
+            textAlign: 'center'
+        },
+        trEven: {
+            backgroundColor: '#f2f2f2'
+        },
+        editButton: {
+            backgroundColor: '#ffa500',
+            color: 'white',
+            border: 'none',
+            padding: '5px 10px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            borderRadius: '4px',
+            fontSize: '14px',
+            margin: '2px'
+        },
+        deleteButton: {
+            backgroundColor: '#f44336',
+            color: 'white',
+            border: 'none',
+            padding: '5px 10px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            borderRadius: '4px',
+            fontSize: '14px',
+            margin: '2px'
+        }
     };
 
     return (
-        <div className="admin-page">
-            <h1>Admin Page</h1>
-
-            <form onSubmit={handleSubmit} style={formStyle}>
-                <h2>{editId ? 'Edit Flight' : 'Add Flight'}</h2>
-                <input
-                    type="text"
-                    name="flight_id"
-                    value={formData.flight_id}
-                    onChange={handleInputChange}
-                    placeholder="Flight ID"
-                    style={inputStyle}
-                    required
-                />
-                <input
-                    type="text"
-                    name="airline"
-                    value={formData.airline}
-                    onChange={handleInputChange}
-                    placeholder="Airline"
-                    style={inputStyle}
-                    required
-                />
-                <input
-                    type="text"
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    placeholder="Status"
-                    style={inputStyle}
-                    required
-                />
-                <input
-                    type="text"
-                    name="departure_gate"
-                    value={formData.departure_gate}
-                    onChange={handleInputChange}
-                    placeholder="Departure Gate"
-                    style={inputStyle}
-                    required
-                />
-                <input
-                    type="text"
-                    name="arrival_gate"
-                    value={formData.arrival_gate}
-                    onChange={handleInputChange}
-                    placeholder="Arrival Gate"
-                    style={inputStyle}
-                    required
-                />
-                <input
-                    type="datetime-local"
-                    name="scheduled_departure"
-                    value={formData.scheduled_departure}
-                    onChange={handleInputChange}
-                    style={inputStyle}
-                    required
-                />
-                <input
-                    type="datetime-local"
-                    name="scheduled_arrival"
-                    value={formData.scheduled_arrival}
-                    onChange={handleInputChange}
-                    style={inputStyle}
-                    required
-                />
-                <input
-                    type="datetime-local"
-                    name="actual_departure"
-                    value={formData.actual_departure}
-                    onChange={handleInputChange}
-                    style={inputStyle}
-                />
-                <input
-                    type="datetime-local"
-                    name="actual_arrival"
-                    value={formData.actual_arrival}
-                    onChange={handleInputChange}
-                    style={inputStyle}
-                />
-                <button type="submit" style={buttonStyle} onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor} onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}>
-                    {editId ? 'Update Flight' : 'Add Flight'}
-                </button>
-            </form>
-
-            <div style={{ marginTop: '20px', overflowX: 'auto' }}>
-                <h2>Existing Flights</h2>
-                <table style={tableStyle}>
+        <div style={styles.container}>
+            <div style={styles.formContainer}>
+                <h1 style={styles.formTitle}>{editId ? 'Edit Flight' : 'Add Flight'}</h1>
+                <form onSubmit={handleSubmit}>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="flight_id" style={styles.label}>Flight ID</label>
+                        <input
+                            type="text"
+                            id="flight_id"
+                            name="flight_id"
+                            value={formData.flight_id}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                            required
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="airline" style={styles.label}>Airline</label>
+                        <input
+                            type="text"
+                            id="airline"
+                            name="airline"
+                            value={formData.airline}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                            required
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="status" style={styles.label}>Status</label>
+                        <input
+                            type="text"
+                            id="status"
+                            name="status"
+                            value={formData.status}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                            required
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="departure_gate" style={styles.label}>Departure Gate</label>
+                        <input
+                            type="text"
+                            id="departure_gate"
+                            name="departure_gate"
+                            value={formData.departure_gate}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                            required
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="arrival_gate" style={styles.label}>Arrival Gate</label>
+                        <input
+                            type="text"
+                            id="arrival_gate"
+                            name="arrival_gate"
+                            value={formData.arrival_gate}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                            required
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="scheduled_departure" style={styles.label}>Scheduled Departure</label>
+                        <input
+                            type="datetime-local"
+                            id="scheduled_departure"
+                            name="scheduled_departure"
+                            value={formData.scheduled_departure}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                            required
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="scheduled_arrival" style={styles.label}>Scheduled Arrival</label>
+                        <input
+                            type="datetime-local"
+                            id="scheduled_arrival"
+                            name="scheduled_arrival"
+                            value={formData.scheduled_arrival}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                            required
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="actual_departure" style={styles.label}>Actual Departure</label>
+                        <input
+                            type="datetime-local"
+                            id="actual_departure"
+                            name="actual_departure"
+                            value={formData.actual_departure}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                        />
+                    </div>
+                    <div style={styles.formGroup}>
+                        <label htmlFor="actual_arrival" style={styles.label}>Actual Arrival</label>
+                        <input
+                            type="datetime-local"
+                            id="actual_arrival"
+                            name="actual_arrival"
+                            value={formData.actual_arrival}
+                            onChange={handleInputChange}
+                            style={styles.input}
+                        />
+                    </div>
+                    <button type="submit" style={styles.button}>
+                        {editId ? 'Update Flight' : 'Add Flight'}
+                    </button>
+                </form>
+            </div>
+            <div style={styles.tableContainer}>
+                <table style={styles.table}>
                     <thead>
                         <tr>
-                            <th style={thStyle}>Flight ID</th>
-                            <th style={thStyle}>Airline</th>
-                            <th style={thStyle}>Status</th>
-                            <th style={thStyle}>Departure Gate</th>
-                            <th style={thStyle}>Arrival Gate</th>
-                            <th style={thStyle}>Scheduled Departure</th>
-                            <th style={thStyle}>Scheduled Arrival</th>
-                            <th style={thStyle}>Actual Departure</th>
-                            <th style={thStyle}>Actual Arrival</th>
-                            <th style={thStyle}>Actions</th>
+                            <th style={styles.th}>Flight ID</th>
+                            <th style={styles.th}>Airline</th>
+                            <th style={styles.th}>Status</th>
+                            <th style={styles.th}>Departure Gate</th>
+                            <th style={styles.th}>Arrival Gate</th>
+                            <th style={styles.th}>Scheduled Departure</th>
+                            <th style={styles.th}>Scheduled Arrival</th>
+                            <th style={styles.th}>Actual Departure</th>
+                            <th style={styles.th}>Actual Arrival</th>
+                            <th style={styles.th}>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {flights.length ? (
-                            flights.map((flight) => (
-                                <tr key={flight._id}>
-                                    <td style={tdStyle}>{flight.flight_id}</td>
-                                    <td style={tdStyle}>{flight.airline}</td>
-                                    <td style={tdStyle}>{flight.status}</td>
-                                    <td style={tdStyle}>{flight.departure_gate}</td>
-                                    <td style={tdStyle}>{flight.arrival_gate}</td>
-                                    <td style={tdStyle}>{new Date(flight.scheduled_departure).toLocaleString()}</td>
-                                    <td style={tdStyle}>{new Date(flight.scheduled_arrival).toLocaleString()}</td>
-                                    <td style={tdStyle}>{flight.actual_departure ? new Date(flight.actual_departure).toLocaleString() : 'N/A'}</td>
-                                    <td style={tdStyle}>{flight.actual_arrival ? new Date(flight.actual_arrival).toLocaleString() : 'N/A'}</td>
-                                    <td style={tdStyle}>
-                                        <button style={editButtonStyle} onClick={() => handleEdit(flight)}>Edit</button>
-                                        <button style={deleteButtonStyle} onClick={() => handleDelete(flight._id)}>Delete</button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="10" style={{ textAlign: 'center', padding: '20px' }}>No flights available</td>
+                        {flights.map((flight, index) => (
+                            <tr key={flight._id} style={index % 2 === 0 ? styles.trEven : {}}>
+                                <td style={styles.td}>{flight.flight_id}</td>
+                                <td style={styles.td}>{flight.airline}</td>
+                                <td style={styles.td}>{flight.status}</td>
+                                <td style={styles.td}>{flight.departure_gate}</td>
+                                <td style={styles.td}>{flight.arrival_gate}</td>
+                                <td style={styles.td}>{flight.scheduled_departure}</td>
+                                <td style={styles.td}>{flight.scheduled_arrival}</td>
+                                <td style={styles.td}>{flight.actual_departure}</td>
+                                <td style={styles.td}>{flight.actual_arrival}</td>
+                                <td style={styles.td}>
+                                    <button style={styles.editButton} onClick={() => handleEdit(flight)}>Edit</button>
+                                    <button style={styles.deleteButton} onClick={() => handleDelete(flight._id)}>Delete</button>
+                                </td>
                             </tr>
-                        )}
+                        ))}
                     </tbody>
                 </table>
             </div>
