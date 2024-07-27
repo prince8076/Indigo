@@ -20,19 +20,6 @@ const FlightStatus = () => {
 
     useEffect(() => {
         fetchFlightData();
-
-        const ws = new WebSocket('ws://localhost:5000');
-        ws.onmessage = (event) => {
-            const update = JSON.parse(event.data);
-            setFlights((prevFlights) => {
-                const updatedFlights = prevFlights.map((flight) =>
-                    flight._id === update._id ? { ...flight, ...update } : flight
-                );
-                return updatedFlights;
-            });
-        };
-
-        return () => ws.close();
     }, []);
 
     const tableStyle = {
