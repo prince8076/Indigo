@@ -13,7 +13,7 @@ function App() {
       const permission = await Notification.requestPermission();
       if (permission === 'granted') {
         // Generate token
-        const token = await getToken(messaging, { vapidKey: 'BMIxKdHwQ_MVBIQr9q7-DyoHWyIosl1YvSGfn8fi_o8WKJOTiVqnuo-I9tLJgj-Fs6cLTe5g1q8nZfUZ8CG5VxU' });
+        const token = await getToken(messaging, { vapidKey: process.env.REACT_APP_VAPID_KEY });
         console.log("Token generated:", token);
       } else if (permission === 'denied') {
         alert('Notification permission denied');
