@@ -14,6 +14,7 @@ const AdminPage = () => {
         actual_arrival: ''
     });
     const [editId, setEditId] = useState(null);
+    const [originalDepartureTime, setOriginalDepartureTime] = useState('');
 
     useEffect(() => {
         fetchFlights();
@@ -26,6 +27,29 @@ const AdminPage = () => {
             setFlights(data);
         } catch (error) {
             console.error('Error fetching flights:', error);
+        }
+    };
+
+    const sendNotification = async (flightId, message) => {
+        try {
+            const response = await fetch('http://localhost:5000/api/notifications/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ flight_id: flightId, message, method: 'Email', recipient: 'konikasingh349@gmail.com', carrier: 'verizon' }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Error response:', response.status, errorText);
+                alert(`Error sending notification: ${errorText}`);
+            } else {
+                console.log('Notification sent successfully');
+            }
+        } catch (error) {
+            console.error('Error sending notification:', error);
+            alert('Error sending notification. Please check the console for details.');
         }
     };
 
@@ -45,6 +69,13 @@ const AdminPage = () => {
             if (response.ok) {
                 alert(editId ? 'Flight updated successfully' : 'Flight added successfully');
                 fetchFlights();
+
+                // Send notification if updating a flight and departure time has changed
+                if (editId && formData.scheduled_departure !== originalDepartureTime) {
+                    const message = `Your flight ${formData.flight_id} is ${formData.status}. New departure time: ${formData.scheduled_departure}. Departure gate: ${formData.departure_gate}.`;
+                    await sendNotification(formData.flight_id, message);
+                }
+
                 setFormData({
                     flight_id: '',
                     airline: '',
@@ -57,6 +88,7 @@ const AdminPage = () => {
                     actual_arrival: ''
                 });
                 setEditId(null);
+                setOriginalDepartureTime('');
             } else {
                 const errorText = await response.text();
                 console.error('Error response:', response.status, errorText);
@@ -67,8 +99,6 @@ const AdminPage = () => {
             alert('Error saving flight data. Please check the console for details.');
         }
     };
-
-
 
     const handleInputChange = (e) => {
         setFormData({
@@ -90,7 +120,9 @@ const AdminPage = () => {
             actual_arrival: flight.actual_arrival
         });
         setEditId(flight._id);
+        setOriginalDepartureTime(flight.scheduled_departure);
     };
+
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this flight?')) {
             return;
@@ -113,7 +145,6 @@ const AdminPage = () => {
             alert('Error deleting flight. Please check the console for details.');
         }
     };
-
 
     const styles = {
         container: {
@@ -358,8 +389,7 @@ const AdminPage = () => {
                                 <td style={styles.td}>{flight.actual_arrival}</td>
                                 <td style={styles.td}>
                                     <button style={styles.editButton} onClick={() => handleEdit(flight)}>Update</button>
-                                    <button style={styles.deleteButton} onClick={() => handleDelete(flight.flight_id)}>Delete</button>
-
+                                    <button style={styles.deleteButton} onClick={() => handleDelete(flight._id)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
