@@ -1,4 +1,4 @@
-// mockData.js
+
 const flights = [
     {
         flight_id: "6E 2341",

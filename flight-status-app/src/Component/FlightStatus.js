@@ -1,5 +1,5 @@
-// src/components/FlightStatus.js
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const FlightStatus = () => {
     const [flights, setFlights] = useState([]);
@@ -46,9 +46,24 @@ const FlightStatus = () => {
         margin: '20px 0',
     };
 
+    const buttonStyle = {
+        display: 'block',
+        margin: '20px auto',
+        padding: '10px 20px',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        textAlign: 'center',
+        fontSize: '16px',
+        textDecoration: 'none', // For Link component
+    };
+
     return (
         <div className="flight-status">
             <h1 style={headingStyle}>Flight Status</h1>
+            <Link to="/notifications" style={buttonStyle}>Stay Updated - Subscribe for Notifications</Link>
             <table style={tableStyle}>
                 <thead>
                     <tr>
