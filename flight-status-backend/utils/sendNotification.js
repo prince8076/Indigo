@@ -1,12 +1,14 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'smtp.gmail.com',
+    secure: true,
     auth: {
         user: 'konikasingh349@gmail.com',
         pass: 'jvcwfuiqgctkripj'
     }
 });
+
 
 const smsGateways = {
     'verizon': 'vtext.com',
@@ -22,7 +24,7 @@ const sendNotification = async (notification, flight) => {
     try {
         if (method === 'Email') {
             const mailOptions = {
-                from: 'konikasingh349@gmail.com',
+                from: "konikasingh349@gmail.com", // Use environment variables for sensitive data
                 to: recipient,
                 subject: 'Flight Status Update',
                 text: message
@@ -33,7 +35,7 @@ const sendNotification = async (notification, flight) => {
         } else if (method === 'SMS' && carrier && smsGateways[carrier]) {
             const smsRecipient = `${recipient}@${smsGateways[carrier]}`;
             const mailOptions = {
-                from: '9773823909',  // Change to a verified sender email if needed
+                from: "konikasingh349@gmail.com", // Use environment variables for sensitive data
                 to: smsRecipient,
                 subject: '',
                 text: message

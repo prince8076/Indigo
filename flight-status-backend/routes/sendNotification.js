@@ -1,37 +1,45 @@
-// routes/sendNotification.js
 const express = require('express');
 const router = express.Router();
-const Notification = require('../models/Notification'); // Adjust path as needed
-const Flight = require('../models/Flight'); // Adjust path as needed to fetch flight details
-const sendNotification = require('../utils/sendNotification'); // Adjust path as needed
+const sendPushNotification = require('../utils/sendPushNotification');
+const sendSMSNotification = require('../utils/sendSMSNotification');
+const sendEmailNotification = require('../utils/sendEmailNotification');
+const User = require('../models/User'); // Adjust path as needed
 
-// Route to send notifications
-router.post('/send', async (req, res) => {
+router.post('/send-push', async (req, res) => {
+    const { userId, messageData } = req.body;
+
     try {
-        const { notification_id } = req.body;
-        if (!notification_id) {
-            return res.status(400).json({ error: 'Notification ID is required' });
+        const registrationToken = await User.getRegistrationToken(userId);
+        if (!registrationToken) {
+            return res.status(404).json({ message: 'Registration token not found' });
         }
 
-        // Fetch the notification from the database
-        const notification = await Notification.findById(notification_id);
-        if (!notification) {
-            return res.status(404).json({ error: 'Notification not found' });
-        }
-
-        // Fetch the flight details
-        const flight = await Flight.findById(notification.flight_id);
-        if (!flight) {
-            return res.status(404).json({ error: 'Flight not found' });
-        }
-
-        // Send the notification
-        await sendNotification(notification, flight);
-
-        res.status(200).json({ message: 'Notification sent successfully' });
+        await sendPushNotification(registrationToken, messageData);
+        res.status(200).json({ message: 'Push notification sent successfully' });
     } catch (error) {
-        console.error('Error sending notification:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Failed to send push notification' });
+    }
+});
+
+router.post('/send-sms', async (req, res) => {
+    const { phoneNumber, messageData } = req.body;
+
+    try {
+        await sendSMSNotification(phoneNumber, messageData);
+        res.status(200).json({ message: 'SMS notification sent successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to send SMS notification' });
+    }
+});
+
+router.post('/send-email', async (req, res) => {
+    const { email, subject, text } = req.body;
+
+    try {
+        await sendEmailNotification(email, subject, text);
+        res.status(200).json({ message: 'Email notification sent successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to send email notification' });
     }
 });
 
